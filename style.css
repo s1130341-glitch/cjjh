@@ -1,0 +1,65 @@
+/* 移除邊距並隱藏捲軸 */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: Arial, sans-serif;
+}
+
+/* 遊戲 UI 容器 */
+#ui-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 讓點擊穿透 UI 傳給遊戲層 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* 準心 (畫面中心的小點) */
+#crosshair {
+    font-size: 24px;
+    font-weight: bold;
+    color: rgba(0, 255, 0, 0.8);
+    user-select: none;
+}
+
+/* 遊戲啟動選單 */
+#instructions {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    text-align: center;
+    pointer-events: auto; /* 恢復點擊，讓按鈕可以按 */
+    border-radius: 10px;
+    border: 2px solid #555;
+}
+
+#start-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#start-button:hover {
+    background: #218838;
+}
+
+/* 左上角分數統計 */
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+}
