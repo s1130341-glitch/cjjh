@@ -1,28 +1,37 @@
 import * as THREE from 'three';
+import { Entity } from './Entity.js';
 
 export class World {
     constructor(scene) {
         this.scene = scene;
         this.buildings = [];
-        this.roads = [];
-        this.gridSize = 100; // 城市大小
-        this.cellSize = 10;  // 每一格的大小
+        this.entities = []; // 存儲車輛與路人
+        this.gridSize = 200; 
+        this.cellSize = 20;  // 網格大小
         
         this.generate();
     }
 
     generate() {
-        // 遍歷網格
-        for (let x = -this.gridSize; x < this.gridSize; x += this.cellSize) {
-            for (let z = -this.gridSize; z < this.gridSize; z += this.cellSize) {
+        // 1. 生成地面與建築
+        for (let x = -this.gridSize / 2; x < this.gridSize / 2; x += this.cellSize) {
+            for (let z = -this.gridSize / 2; z < this.gridSize / 2; z += this.cellSize) {
                 
-                // 隨機決定這一格是 道路 還是 建築
-                // 假設 20% 的機率是道路 (x 或 z 是 10 的倍數時)
-                if (Math.abs(x) % 30 === 0 || Math.abs(z) % 30 === 0) {
+                // 判斷是否為道路 (簡單規律：每隔兩格一條路)
+                const isRoadX = Math.abs(x) % (this.cellSize * 3) === 0;
+                const isRoadZ = Math.abs(z) % (this.cellSize * 3) === 0;
+
+                if (isRoadX || isRoadZ) {
                     this.createRoad(x, z);
+                    
+                    // 在道路上隨機生成車輛或行人
+                    if (Math.random() > 0.9) {
+                        const type = Math.random() > 0.5 ? 'car' : 'npc';
+                        this.entities.push(new Entity(this.scene, type, x, z));
+                    }
                 } else {
-                    // 70% 機率生成建築，留下一點空隙
-                    if (Math.random() > 0.3) {
+                    // 非道路區域生成建築
+                    if (Math.random() > 0.2) {
                         this.createBuilding(x, z);
                     }
                 }
@@ -31,20 +40,19 @@ export class World {
     }
 
     createBuilding(x, z) {
-        const w = Math.random() * 5 + 3; // 寬度 3~8
-        const h = Math.random() * 20 + 5; // 高度 5~25
-        const d = Math.random() * 5 + 3; // 深度 3~8
+        const w = Math.random() * 8 + 5;
+        const h = Math.random() * 40 + 10; // 隨機高度
+        const d = Math.random() * 8 + 5;
         
         const geometry = new THREE.BoxGeometry(w, h, d);
-        // 隨機灰色調（像都市建築）
-        const colorValue = Math.random() * 0.5 + 0.3;
+        const colorVal = 0.3 + Math.random() * 0.3;
         const material = new THREE.MeshPhongMaterial({ 
-            color: new THREE.Color(colorValue, colorValue, colorValue + 0.1) 
+            color: new THREE.Color(colorVal, colorVal, colorVal + 0.1) 
         });
         
         const building = new THREE.Mesh(geometry, material);
-        // 設定位置，y 軸要加上高度的一半，確保建築底部在地板上
-        building.position.set(x + (Math.random() - 0.5) * 2, h / 2, z + (Math.random() - 0.5) * 2);
+        // 隨機微調位置讓城市不那麼死板
+        building.position.set(x + (Math.random()-0.5)*5, h / 2, z + (Math.random()-0.5)*5);
         
         this.scene.add(building);
         this.buildings.push(building);
@@ -52,13 +60,17 @@ export class World {
 
     createRoad(x, z) {
         const geometry = new THREE.PlaneGeometry(this.cellSize, this.cellSize);
-        const material = new THREE.MeshPhongMaterial({ color: 0x333333 }); // 深灰色道路
+        const material = new THREE.MeshPhongMaterial({ color: 0x222222 });
         const road = new THREE.Mesh(geometry, material);
-        
         road.rotation.x = -Math.PI / 2;
-        road.position.set(x, 0.01, z); // 稍微高於地板 0.01 避免閃爍 (Z-fighting)
-        
+        road.position.set(x, 0.05, z);
         this.scene.add(road);
-        this.roads.push(road);
+    }
+
+    update() {
+        // 更新所有移動實體的位置
+        this.entities.forEach(entity => {
+            entity.update();
+        });
     }
 }
