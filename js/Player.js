@@ -69,6 +69,34 @@ export class Player {
         document.addEventListener('wheel', onWheel);
     }
 
+    // 在 Player 類別中新增這個方法
+shoot(entities) {
+    const raycaster = new THREE.Raycaster();
+    // 從相機中心發射射線
+    raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
+
+    // 取得所有實體的 Mesh 來進行檢測
+    const targetMeshes = entities.map(e => e.mesh);
+    const intersects = raycaster.intersectObjects(targetMeshes, true);
+
+    if (intersects.length > 0) {
+        let hitObject = intersects[0].object;
+        // 找到該 Mesh 所屬的 Group
+        while (hitObject.parent && !(hitObject.parent instanceof THREE.Scene)) {
+            hitObject = hitObject.parent;
+            if (hitObject instanceof THREE.Group) break;
+        }
+
+        console.log("擊中目標！");
+        // 簡單的擊中效果：縮小消失
+        hitObject.scale.set(0.1, 0.1, 0.1);
+        setTimeout(() => { hitObject.visible = false; }, 200);
+        
+        return true; // 代表擊中
+    }
+    return false;
+}
+
     update(delta) {
         if (!this.controls.isLocked) return;
 
