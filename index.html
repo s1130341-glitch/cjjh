@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 隨機城市射擊遊戲</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@latest/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@latest/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="ui-container">
+        <div id="crosshair">+</div>
+        <div id="instructions">
+            <h1>gta</h1>
+            <p>WASD 移動 | 滑鼠點擊 轉動視角 & 射擊</p>
+            <button id="start-button">開始遊戲</button>
+        </div>
+        <div id="info">擊中目標: <span id="score">0</span></div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
